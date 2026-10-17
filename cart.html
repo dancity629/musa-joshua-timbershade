@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Your Cart | Musa Joshua Timbershade</title>
+  <meta name="description" content="Review your building materials order and send it to Musa Joshua Timbershade on WhatsApp.">
+  <meta name="theme-color" content="#1B4332">
+  <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&amp;family=Zilla+Slab:wght@600;700&amp;display=swap">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/responsive.css">
+</head>
+<body data-page="cart">
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html" aria-label="Musa Joshua Timbershade home">
+        <svg class="brand__mark" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+          <rect width="48" height="48" rx="10" fill="#8B5E3C"/>
+          <path d="M8 24 24 11l16 13" fill="none" stroke="#F5F0E6" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="12" y="27" width="24" height="4" rx="1" fill="#F5F0E6"/>
+          <rect x="12" y="33" width="24" height="4" rx="1" fill="#F5F0E6" opacity=".75"/>
+        </svg>
+        <span class="brand__text">
+          <span class="brand__name">Musa Joshua</span>
+          <span class="brand__sub">Timbershade</span>
+        </span>
+      </a>
+
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-menu">
+        <span class="nav-toggle__bar" aria-hidden="true"></span>
+        <span class="visually-hidden">Menu</span>
+      </button>
+
+      <nav id="site-menu" class="site-nav" aria-label="Main">
+        <ul class="nav-list">
+          <li><a href="index.html" data-nav="home">Home</a></li>
+          <li><a href="products.html" data-nav="products">Products</a></li>
+          <li><a href="about.html" data-nav="about">About</a></li>
+          <li><a href="contact.html" data-nav="contact">Contact</a></li>
+        </ul>
+      </nav>
+
+      <a class="cart-link" href="cart.html" data-nav="cart" data-cart-label aria-label="Cart">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M3 4h2l2.4 11.2a1 1 0 0 0 1 .8h8.9a1 1 0 0 0 1-.8L20 8H6.2M9 20h.01M17 20h.01"/></svg>
+        <span class="cart-link__text">Cart</span>
+        <span class="cart-count" data-cart-count hidden>0</span>
+      </a>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="page-hero page-hero--compact">
+      <div class="container">
+        <h1>Your Cart</h1>
+        <p>Review quantities, then send your order to us on WhatsApp.</p>
+      </div>
+    </section>
+
+    <section class="section section--tight">
+      <div class="container" id="cart-root" aria-live="polite">
+        <noscript><p class="notice">Please enable JavaScript to use the cart, or message us directly on WhatsApp at +234 802 469 4963.</p></noscript>
+        <p class="notice">Loading your cart&hellip;</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <a class="brand brand--light" href="index.html" aria-label="Musa Joshua Timbershade home">
+          <svg class="brand__mark" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+          <rect width="48" height="48" rx="10" fill="#8B5E3C"/>
+          <path d="M8 24 24 11l16 13" fill="none" stroke="#F5F0E6" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="12" y="27" width="24" height="4" rx="1" fill="#F5F0E6"/>
+          <rect x="12" y="33" width="24" height="4" rx="1" fill="#F5F0E6" opacity=".75"/>
+        </svg>
+          <span class="brand__text">
+            <span class="brand__name">Musa Joshua</span>
+            <span class="brand__sub">Timbershade</span>
+          </span>
+        </a>
+        <p>Roofing woods, planks, timber, nails and other building materials.</p>
+      </div>
+      <nav class="footer-nav" aria-label="Footer">
+        <h2 class="footer-heading">Explore</h2>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="products.html">Products</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="cart.html">Cart</a></li>
+        </ul>
+      </nav>
+      <div class="footer-contact">
+        <h2 class="footer-heading">Contact</h2>
+        <p><span data-business-name>Musa Joshua Timbershade</span></p>
+        <p>WhatsApp: <a href="https://wa.me/2348024694963" data-wa-link="enquiry"><span data-wa-display>+234 802 469 4963</span></a></p>
+        <p data-location>Business address to be announced.</p>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <p>&copy; <span data-year>2026</span> Musa Joshua Timbershade. Prices on this site are confirmed on WhatsApp before any order is final.</p>
+    </div>
+  </footer>
+
+  <script src="assets/js/config.js" defer></script>
+  <script src="assets/js/products-data.js" defer></script>
+  <script src="assets/js/main.js" defer></script>
+  <script src="assets/js/cart.js" defer></script>
+  <script src="assets/js/checkout.js" defer></script>
+</body>
+</html>
