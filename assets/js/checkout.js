@@ -22,7 +22,7 @@ window.MJT = window.MJT || {};
 
   /* ---------- Message building ---------- */
 
-  function buildOrderMessage(lines, totals, orderRef) {
+  function buildOrderMessage(lines, orderRef) {
     var out = [];
     out.push('Hello ' + config.businessName + ', I would like to place an order.');
     out.push('Order Reference: ' + orderRef);
@@ -30,18 +30,11 @@ window.MJT = window.MJT || {};
 
     lines.forEach(function (line, index) {
       var p = line.product;
-      out.push((index + 1) + '. ' + p.name + ' — ' + line.qty + ' ' + utils.formatUnit(p.unit, line.qty));
-      out.push('Unit Price: ' + utils.formatNaira(p.price) + (p.unit ? ' ' + utils.perUnitLabel(p.unit) : ''));
-      out.push('Total: ' + utils.formatNaira(line.lineTotal));
-      out.push('');
+      out.push((index + 1) + '. ' + p.name + ' \u2014 ' + line.qty + (p.unit ? ' ' + utils.formatUnit(p.unit, line.qty) : ''));
     });
 
-    out.push('Order Subtotal: ' + utils.formatNaira(totals.subtotal));
-    if (totals.delivery) out.push('Delivery: ' + utils.formatNaira(totals.delivery));
-    if (totals.tax) out.push('Tax: ' + utils.formatNaira(totals.tax));
-    if (totals.delivery || totals.tax) out.push('Order Total: ' + utils.formatNaira(totals.total));
     out.push('');
-    out.push('Please confirm availability and the final order details. Thank you.');
+    out.push('Please send me the prices and confirm availability. Thank you.');
     return out.join('\n');
   }
 
@@ -49,7 +42,7 @@ window.MJT = window.MJT || {};
     var state = MJT.cart.resolve(products);
     if (!state.lines.length) return null;
     var ref = MJT.cart.orderRef();
-    var message = buildOrderMessage(state.lines, state.totals, ref);
+    var message = buildOrderMessage(state.lines, ref);
     return { ref: ref, message: message, url: utils.whatsappUrl(message), skipped: state.missing.length };
   }
 
@@ -114,7 +107,7 @@ window.MJT = window.MJT || {};
         onclick: function () {
           MJT.cart.clear();
           openDialog('Thank you', [
-            el('p', { text: 'Your cart has been cleared. Musa Joshua Timbershade will reply on WhatsApp to confirm availability, final prices and delivery for order ' + checkout.ref + '.' })
+            el('p', { text: 'Your cart has been cleared. Musa Joshua Timbershade will reply on WhatsApp with prices, availability and delivery for order ' + checkout.ref + '.' })
           ], [
             el('a', { className: 'btn btn--primary', href: 'products.html', text: 'Continue Browsing' }),
             el('button', { type: 'button', className: 'btn btn--outline', text: 'Close', onclick: closeDialog })

@@ -3,7 +3,7 @@
  *
  * MJT.cart is the cart store. It only keeps product IDs and quantities, so it
  * does not care where product data comes from (local file today, API later).
- * Prices and names are looked up from the current product list at display and
+ * Names and units are looked up from the current product list at display and
  * checkout time via MJT.cart.resolve(products).
  *
  * The cart page view at the bottom renders into #cart-root when present.
@@ -29,10 +29,6 @@ window.MJT = window.MJT || {};
   function clampToStock(product, qty) {
     if (product && typeof product.stock === 'number' && product.stock >= 0) return Math.min(qty, product.stock);
     return qty;
-  }
-
-  function roundMoney(n) {
-    return Math.round(n * 100) / 100;
   }
 
   // Read and sanitise whatever is in storage; drop anything malformed.
@@ -145,18 +141,10 @@ window.MJT = window.MJT || {};
       var missing = [];
       items.forEach(function (item) {
         var product = byId[item.id];
-        if (!product || !Number.isFinite(Number(product.price))) { missing.push(item); return; }
-        var qty = clampToStock(product, item.qty);
-        lines.push({ product: product, qty: qty, lineTotal: roundMoney(Number(product.price) * qty) });
+        if (!product) { missing.push(item); return; }
+        lines.push({ product: product, qty: clampToStock(product, item.qty) });
       });
-      return { lines: lines, missing: missing, totals: MJT.cart.totals(lines) };
-    },
-
-    totals: function (lines) {
-      var subtotal = roundMoney(lines.reduce(function (sum, l) { return sum + l.lineTotal; }, 0));
-      var delivery = lines.length && config.deliveryFee > 0 ? roundMoney(config.deliveryFee) : 0;
-      var tax = config.taxRate > 0 ? roundMoney(subtotal * config.taxRate) : 0;
-      return { subtotal: subtotal, delivery: delivery, tax: tax, total: roundMoney(subtotal + delivery + tax) };
+      return { lines: lines, missing: missing };
     }
   };
 
@@ -206,14 +194,10 @@ window.MJT = window.MJT || {};
       el('img', { className: 'cart-item__img', src: utils.safeImageUrl(p.image), alt: p.name, width: '120', height: '90' }),
       el('div', { className: 'cart-item__info' }, [
         el('h3', { className: 'cart-item__name', text: p.name }),
-        el('p', { className: 'cart-item__unit', text: utils.formatNaira(p.price) + ' ' + utils.perUnitLabel(p.unit) }),
+        p.unit ? el('p', { className: 'cart-item__unit', text: 'Sold ' + utils.perUnitLabel(p.unit) }) : null,
         typeof p.stock === 'number' ? el('p', { className: 'cart-item__note', text: 'Limited to ' + p.stock + ' in stock.' }) : null
       ]),
       quantityControl(line),
-      el('p', { className: 'cart-item__total' }, [
-        el('span', { className: 'visually-hidden', text: 'Line total: ' }),
-        utils.formatNaira(line.lineTotal)
-      ]),
       el('button', {
         type: 'button', className: 'btn btn--text cart-item__remove', 'data-remove': p.id,
         'aria-label': 'Remove ' + p.name + ' from cart', text: 'Remove',
@@ -255,7 +239,7 @@ window.MJT = window.MJT || {};
       root.appendChild(el('div', { className: 'empty-state' }, [
         el('img', { src: 'assets/images/plank-1x10.svg', alt: '', width: '240', height: '180' }),
         el('h2', { text: 'Your cart is empty' }),
-        el('p', { text: 'Browse our roofing woods, planks, timber, nails and other materials, then add what you need.' }),
+        el('p', { text: 'Browse our roofing woods, planks, timber and nails, then add what you need.' }),
         el('a', { className: 'btn btn--primary', href: 'products.html', text: 'Browse Products' })
       ]));
       return;
@@ -265,18 +249,15 @@ window.MJT = window.MJT || {};
     state.lines.forEach(function (line) { list.appendChild(cartRow(line)); });
     state.missing.forEach(function (item) { list.appendChild(missingRow(item)); });
 
-    var t = state.totals;
+    var count = state.lines.length;
     var summary = el('dl', { className: 'summary-list' }, [
-      summaryRow('Subtotal', utils.formatNaira(t.subtotal)),
-      t.delivery ? summaryRow('Delivery', utils.formatNaira(t.delivery)) : null,
-      t.tax ? summaryRow('Tax', utils.formatNaira(t.tax)) : null,
-      (t.delivery || t.tax) ? summaryRow('Total', utils.formatNaira(t.total), 'summary-row--total') : null
+      summaryRow('Products in your order', String(count))
     ]);
 
     var aside = el('aside', { className: 'cart-summary', 'aria-labelledby': 'summary-heading' }, [
       el('h2', { id: 'summary-heading', text: 'Order summary' }),
       summary,
-      el('p', { className: 'cart-summary__note', text: 'Sending your cart on WhatsApp is an order enquiry, not a payment. We will confirm availability, final prices and delivery before anything is reserved.' }),
+      el('p', { className: 'cart-summary__note', text: 'Prices are not listed online. Send your list on WhatsApp and we will reply with current prices, availability and delivery. Sending it is an enquiry, not a payment.' }),
       el('button', { type: 'button', className: 'btn btn--whatsapp btn--block', 'data-action': 'whatsapp-checkout', disabled: !state.lines.length, text: 'Proceed to WhatsApp Checkout' }),
       el('a', { className: 'btn btn--outline btn--block', href: 'products.html', text: 'Continue Shopping' }),
       el('button', {

@@ -28,8 +28,8 @@
   .contact-grid { grid-template-columns: 1fr 1.2fr; }
 
   .cart-item {
-    grid-template-columns: 100px minmax(0, 1fr) auto 120px;
-    grid-template-areas: "img info qty total" "img remove remove remove";
+    grid-template-columns: 100px minmax(0, 1fr) auto auto;
+    grid-template-areas: "img info qty remove";
   }
   .cart-item__img { width: 100px; }
   .cart-item__remove { justify-self: end; }
@@ -59,7 +59,7 @@
 }
 
 @media (min-width: 1100px) {
-  .category-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .category-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .category-card { grid-template-columns: 1fr; align-items: stretch; padding: 0; overflow: hidden; }
   .category-card img { border-radius: 0; }
   .category-card__body { padding: var(--space-3) var(--space-4) var(--space-4); }

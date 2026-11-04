@@ -51,8 +51,6 @@ window.MJT = window.MJT || {};
 
   var SORTS = {
     featured: function (a, b) { return (b.featured ? 1 : 0) - (a.featured ? 1 : 0); },
-    'price-asc': function (a, b) { return a.price - b.price; },
-    'price-desc': function (a, b) { return b.price - a.price; },
     name: function (a, b) { return a.name.localeCompare(b.name); }
   };
 

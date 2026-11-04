@@ -1,5 +1,5 @@
 /*
- * Shared helpers and page chrome: price formatting, safe DOM building,
+ * Shared helpers and page chrome: unit labels, safe DOM building,
  * storage access, navigation, cart badge, toasts and product cards.
  */
 window.MJT = window.MJT || {};
@@ -10,18 +10,6 @@ window.MJT = window.MJT || {};
   var config = MJT.config;
 
   /* ---------- Formatting ---------- */
-
-  var nairaFormatter = new Intl.NumberFormat(config.locale, {
-    style: 'currency',
-    currency: config.currency,
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2
-  });
-
-  function formatNaira(amount) {
-    var value = Number(amount);
-    return nairaFormatter.format(Number.isFinite(value) ? value : 0);
-  }
 
   var UNIT_PLURALS = { piece: 'pieces', length: 'lengths', bundle: 'bundles', kg: 'kg', pack: 'packs', sheet: 'sheets', roll: 'rolls', tin: 'tins', bag: 'bags' };
 
@@ -49,7 +37,7 @@ window.MJT = window.MJT || {};
 
   // Only allow relative paths or http(s) URLs for product images.
   function safeImageUrl(url) {
-    var fallback = 'assets/images/other-materials.svg';
+    var fallback = 'assets/images/plank-1x10.svg';
     if (typeof url !== 'string' || !url.trim()) return fallback;
     var trimmed = url.trim();
     if (/^(https?:)?\/\//i.test(trimmed)) return trimmed;
@@ -177,21 +165,15 @@ window.MJT = window.MJT || {};
       showToast('Added ' + qty + ' ' + formatUnit(product.unit, qty) + ' of ' + product.name + ' to your cart.', { href: 'cart.html', label: 'View cart' });
     });
 
-    var badge = product.isDemo ? el('span', { className: 'badge badge--demo', text: 'Sample price' }) : null;
-
     return el('article', { className: 'product-card', 'data-product-id': product.id }, [
       el('div', { className: 'product-card__media' }, [
-        el('img', { src: safeImageUrl(product.image), alt: product.name, loading: 'lazy', width: '400', height: '300' }),
-        badge
+        el('img', { src: safeImageUrl(product.image), alt: product.name, loading: 'lazy', width: '400', height: '300' })
       ]),
       el('div', { className: 'product-card__body' }, [
         el('p', { className: 'product-card__category', text: categoryName(product.category) }),
         el('h3', { className: 'product-card__title', text: product.name }),
         el('p', { className: 'product-card__desc', text: product.description || '' }),
-        el('p', { className: 'product-card__price' }, [
-          el('span', { className: 'price', text: formatNaira(product.price) }),
-          el('span', { className: 'unit', text: ' ' + perUnitLabel(product.unit) })
-        ]),
+        product.unit ? el('p', { className: 'product-card__unit', text: 'Sold ' + perUnitLabel(product.unit) }) : null,
         el('div', { className: 'product-card__actions' }, [
           el('label', { className: 'visually-hidden', for: qtyId, text: 'Quantity of ' + product.name }),
           qtyInput,
@@ -253,8 +235,21 @@ window.MJT = window.MJT || {};
     document.querySelectorAll('[data-wa-display]').forEach(function (n) { n.textContent = config.whatsappDisplay; });
     document.querySelectorAll('[data-business-name]').forEach(function (n) { n.textContent = config.businessName; });
     document.querySelectorAll('[data-location]').forEach(function (n) {
-      n.textContent = config.location || 'Business address to be announced. Message us on WhatsApp for directions.';
-      n.classList.toggle('is-placeholder', !config.location);
+      n.textContent = '';
+      if (config.mapUrl) {
+        n.appendChild(el('a', { href: config.mapUrl, target: '_blank', rel: 'noopener', text: config.locationLabel || 'View our location on Google Maps' }));
+      } else {
+        n.textContent = 'Business address to be announced. Message us on WhatsApp for directions.';
+      }
+      n.classList.toggle('is-placeholder', !config.mapUrl);
+    });
+    document.querySelectorAll('[data-map]').forEach(function (n) {
+      n.hidden = !config.mapEmbedUrl;
+      if (!config.mapEmbedUrl || n.querySelector('iframe')) return;
+      n.appendChild(el('iframe', {
+        src: config.mapEmbedUrl, title: 'Map showing the location of ' + config.businessName,
+        loading: 'lazy', referrerpolicy: 'no-referrer-when-downgrade', allowfullscreen: true
+      }));
     });
     document.querySelectorAll('[data-year]').forEach(function (n) { n.textContent = String(new Date().getFullYear()); });
   }
@@ -262,7 +257,6 @@ window.MJT = window.MJT || {};
   /* ---------- Public API ---------- */
 
   MJT.utils = {
-    formatNaira: formatNaira,
     formatUnit: formatUnit,
     perUnitLabel: perUnitLabel,
     escapeHtml: escapeHtml,
