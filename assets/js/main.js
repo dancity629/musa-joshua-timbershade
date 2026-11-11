@@ -236,12 +236,15 @@ window.MJT = window.MJT || {};
     document.querySelectorAll('[data-business-name]').forEach(function (n) { n.textContent = config.businessName; });
     document.querySelectorAll('[data-location]').forEach(function (n) {
       n.textContent = '';
+      if (config.address) n.appendChild(el('span', { className: 'address', text: config.address }));
       if (config.mapUrl) {
+        if (config.address) n.appendChild(el('br'));
         n.appendChild(el('a', { href: config.mapUrl, target: '_blank', rel: 'noopener', text: config.locationLabel || 'View our location on Google Maps' }));
-      } else {
+      }
+      if (!config.address && !config.mapUrl) {
         n.textContent = 'Business address to be announced. Message us on WhatsApp for directions.';
       }
-      n.classList.toggle('is-placeholder', !config.mapUrl);
+      n.classList.toggle('is-placeholder', !config.address && !config.mapUrl);
     });
     document.querySelectorAll('[data-map]').forEach(function (n) {
       n.hidden = !config.mapEmbedUrl;

@@ -289,6 +289,18 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .results-status { font-size: .95rem; color: var(--ink-muted); margin-bottom: var(--space-4); }
 
 /* ---------- Features ---------- */
+.review-grid { list-style: none; display: grid; gap: var(--space-4); }
+.review { display: flex; flex-direction: column; gap: var(--space-2); padding: var(--space-5); background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); }
+.review__quote { margin: 0; flex: 1; font-size: 1.05rem; }
+.review__quote p { margin: 0; }
+.review__quote p::before { content: '\201C'; }
+.review__quote p::after { content: '\201D'; }
+.review__name { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; color: var(--forest-deep); }
+.review__context { margin: 0; font-size: .9rem; color: var(--ink-muted); }
+.review--invite { border-style: dashed; border-color: var(--timber); background: #FBF7EE; }
+.review--invite p { margin: 0; color: var(--ink-muted); }
+.review--invite .review__name { color: var(--forest-deep); }
+.review--invite .btn { align-self: flex-start; margin-top: var(--space-2); }
 .feature-grid { list-style: none; display: grid; gap: var(--space-4); }
 .feature { padding: var(--space-5); border: 1px solid var(--line); border-radius: var(--radius); border-top: 4px solid var(--timber); background: var(--white); }
 .feature p { margin: 0; color: var(--ink-muted); }

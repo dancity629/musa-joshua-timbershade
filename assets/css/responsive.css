@@ -18,6 +18,7 @@
 
   .category-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .feature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .review-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .supply-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .footer-grid { grid-template-columns: 1.4fr 1fr 1.2fr; }
 
@@ -64,6 +65,7 @@
   .category-card img { border-radius: 0; }
   .category-card__body { padding: var(--space-3) var(--space-4) var(--space-4); }
   .feature-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .review-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .product-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   #featured-products { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
