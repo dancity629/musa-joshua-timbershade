@@ -1,0 +1,24 @@
+# Musa Joshua Timbershade: Apache settings for PHP hosting (cPanel etc.)
+Options -Indexes
+DirectoryIndex index.html index.php
+
+# Never serve source-control files, docs, SQL or local config.
+<FilesMatch "(^\.|\.(md|sql|log|sample\.php|zip)$|^composer\.(json|lock)$)">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+</FilesMatch>
+RedirectMatch 404 /\.git
+
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set X-Frame-Options "SAMEORIGIN"
+</IfModule>
+
+# Uncomment after SSL is active to force https:
+# <IfModule mod_rewrite.c>
+#   RewriteEngine On
+#   RewriteCond %{HTTPS} off
+#   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+# </IfModule>

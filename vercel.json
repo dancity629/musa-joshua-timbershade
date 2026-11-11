@@ -1,0 +1,56 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "regions": [
+    "fra1"
+  ],
+  "functions": {
+    "api/*.php": {
+      "runtime": "vercel-php@0.9.0",
+      "maxDuration": 30
+    }
+  },
+  "routes": [
+    {
+      "src": "/admin",
+      "status": 308,
+      "headers": {
+        "Location": "/admin/"
+      }
+    },
+    {
+      "src": "/admin/(index\\.php)?",
+      "dest": "/api/admin.php"
+    },
+    {
+      "src": "/install\\.php",
+      "dest": "/api/install.php"
+    },
+    {
+      "src": "/api/?",
+      "dest": "/api/index.php"
+    },
+    {
+      "src": "/(server|tests|docs|uploads|node_modules)(/.*)?",
+      "status": 404
+    },
+    {
+      "src": "/(.*/)?\\.[^/]+",
+      "status": 404
+    },
+    {
+      "src": "/(.*)\\.(md|lock|sh|sql)",
+      "status": 404
+    },
+    {
+      "src": "/(?!api/(index|admin|install)\\.php$).*\\.php",
+      "status": 404
+    },
+    {
+      "src": "/(vercel|package|package-lock|composer)\\.json",
+      "status": 404
+    },
+    {
+      "handle": "filesystem"
+    }
+  ]
+}

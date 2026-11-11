@@ -1,10 +1,15 @@
 /*
  * Site-wide configuration.
- * Change business details here; every page reads from this one object.
+ *
+ * With the PHP backend installed, business details are managed in the admin
+ * dashboard (Contact Details, Branding, Website Settings) and loaded from the
+ * API by site-data.js, which overwrites the values below. These values are the
+ * built-in fallback used only when the API cannot be reached (for example on
+ * the GitHub Pages copy of the site).
  */
 window.MJT = window.MJT || {};
 
-MJT.config = Object.freeze({
+MJT.config = {
   businessName: 'Musa Joshua Timbershade',
 
   // WhatsApp number in international format, digits only (used in wa.me links).
@@ -30,5 +35,17 @@ MJT.config = Object.freeze({
   storageKeys: {
     cart: 'mjt_cart_v1',
     orderRef: 'mjt_order_ref_v1'
-  }
-});
+  },
+
+  // Prices: 'contact' hides them ("Contact for price"), 'show' displays naira prices.
+  priceMode: 'contact',
+  currency: 'NGN',
+
+  // Public content endpoint of the PHP backend, relative to the site root.
+  apiUrl: 'api/index.php?route=public/site',
+
+  // Address of the PHP-hosted site once it is live, e.g. 'https://www.example.com.ng'.
+  // When set, visitors who open the old GitHub Pages address (including /admin)
+  // are forwarded there. Leave null until the new site is live.
+  siteUrl: null
+};

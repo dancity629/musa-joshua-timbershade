@@ -4,7 +4,9 @@ Customer-facing website for **Musa Joshua Timbershade**, a building materials bu
 
 Customers can browse the catalogue, build a cart, and send their order to the business on WhatsApp with the cart contents written into the message.
 
-This is phase 1: public website only. There is no admin dashboard, login, database or API yet. The code is structured so those can be added later without rebuilding the frontend (see [Connecting a PHP/MySQL backend later](#connecting-a-phpmysql-backend-later)).
+The site now has an **admin dashboard and CMS** (`/admin`) backed by PHP and MySQL. Products, categories, prices, images, the logo, homepage sections, the About and Contact pages, testimonials, contact details and settings are all edited there, and the public pages load them from the API. See [Admin dashboard and backend](#admin-dashboard-and-backend) and [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+
+The dashboard needs PHP hosting. On static hosting (GitHub Pages) the public pages still work, using the built-in content in `assets/js/`.
 
 ## Contents
 
@@ -15,7 +17,7 @@ This is phase 1: public website only. There is no admin dashboard, login, databa
 - [Editing products](#editing-products)
 - [Replacing images](#replacing-images)
 - [Deployment](#deployment)
-- [Connecting a PHP/MySQL backend later](#connecting-a-phpmysql-backend-later)
+- [Admin dashboard and backend](#admin-dashboard-and-backend)
 - [Placeholders to replace before launch](#placeholders-to-replace-before-launch)
 
 ## Project structure
@@ -92,7 +94,9 @@ The VS Code "Live Server" extension also works.
 
 ## Configuration
 
-All business settings are in `assets/js/config.js`:
+**With the backend installed, these come from the dashboard (Contact Details, Branding, Website Settings).** `assets/js/config.js` holds the fallback values, plus `apiUrl` (the content endpoint) and `siteUrl` (set it to the PHP site's address to forward GitHub Pages visitors there).
+
+Fallback business settings in `assets/js/config.js`:
 
 | Setting | Purpose |
 | --- | --- |
@@ -108,6 +112,8 @@ All business settings are in `assets/js/config.js`:
 The HTML also contains the WhatsApp number as a fallback `href` for visitors without JavaScript. If the number changes, update `config.js` and search the five HTML files for `2348024694963` and `+234 802 469 4963`.
 
 ## Editing products
+
+**With the backend installed, edit products in the dashboard (Products).** The rest of this section describes the built-in fallback list used only on static hosting.
 
 Products live in one place: `MJT.productsData` in `assets/js/products-data.js`. Each product looks like this:
 
@@ -145,6 +151,8 @@ To replace them:
 
 ## Deployment
 
+**For the admin dashboard, follow [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)** (PHP/MySQL hosting such as cPanel) **or [docs/VERCEL.md](docs/VERCEL.md)** (Vercel with an external MySQL database and Vercel Blob). The steps below cover static-only hosting of the public pages.
+
 The site is plain HTML, CSS and JavaScript. It runs on any PHP/MySQL shared host (cPanel, DirectAdmin, Plesk etc.) without changes, and also on static hosts.
 
 **cPanel or similar shared hosting**
@@ -166,29 +174,49 @@ After deploying, check:
 
 No server-side configuration is required. Paths are all relative, so the site also works from a subfolder (e.g. `example.com/shop/`).
 
-## Connecting a PHP/MySQL backend later
+## Admin dashboard and backend
 
-The frontend is already separated so a database and admin dashboard can be added in a later phase:
+```
+admin/            Dashboard: index.php (login or app, decided on the server), assets/admin.js, assets/admin.css
+                  index.html is only a notice for static hosting
+api/index.php     REST API front controller (routes in server/Api.php)
+server/           PHP library, schema.sql, installer, config (blocked from the web)
+uploads/          Images uploaded in the Media Library (scripts disabled)
+install.php       One-time browser installer
+assets/js/site-data.js  Loads all public content from api/index.php?route=public/site
+assets/js/cms.js        Fills elements marked data-cms="..." with that content
+tests/            api-test.php (79 checks), e2e.js (33 browser checks), static-fallback.js
+docs/DEPLOYMENT.md      Hosting, install, security summary
+docs/VERCEL.md          Deploying on Vercel (env variables, database, Blob)
+vercel.json             Vercel routes and PHP runtime
+```
 
-- **One product source.** Every page gets products through `MJT.productSource.getAll()`, which returns a Promise. Today it resolves the local array. To use an API, change only that function in `products-data.js`:
+Main API routes (all JSON; admin routes need the session, and changes need the `X-CSRF-Token` header):
 
-  ```js
-  MJT.productSource = {
-    getAll: function () {
-      return fetch('api/products.php', { headers: { Accept: 'application/json' } })
-        .then(function (res) {
-          if (!res.ok) throw new Error('HTTP ' + res.status);
-          return res.json();
-        });
-    }
-  };
-  ```
+| Route | Methods | Purpose |
+| --- | --- | --- |
+| `public/site` | GET | Everything the public pages need (no login) |
+| `auth/me`, `auth/login`, `auth/logout`, `auth/password` | GET/POST | Session, CSRF token, login, logout, password change |
+| `dashboard` | GET | Overview counts and recent updates |
+| `products`, `products/{id}` | GET, POST, PUT, DELETE | Products with search (`q`), `category`, `status`, `page` |
+| `products/featured`, `products/reorder` | PUT, POST | Featured selection and order; display order |
+| `categories`, `categories/{id}`, `categories/reorder` | GET, POST, PUT, DELETE | Categories |
+| `media`, `media/{id}`, `media/{id}/replace` | GET, POST, PUT, DELETE | Media Library uploads, rename, replace, delete |
+| `testimonials`, `testimonials/{id}`, `testimonials/reorder` | GET, POST, PUT, DELETE | Reviews |
+| `content/home`, `content/home/{section}` | GET, PUT | Homepage sections (hero, categories, featured, why, reviews, about, contact) |
+| `content/pages/{about,contact}` | GET, PUT | About and Contact page text |
+| `settings`, `settings/{branding,contact,general}` | GET, PUT | Branding, contact details, price mode, SEO, footer |
 
-- **Same fields.** The API should return a JSON array of objects with the fields listed in [Editing products](#editing-products): `id`, `name`, `category`, `unit`, `image`, `description`, `stock`, `featured`. A matching MySQL table would have one column per field (`id` as a unique string or the numeric primary key cast to string; `stock` as nullable `INT`). If prices are shown again later, add a `price` column and display it in `MJT.renderProductCard` (`main.js`), the cart rows (`cart.js`) and the WhatsApp message (`checkout.js`).
-- **Cart is independent.** The cart stores only product IDs and quantities, and looks up names and units from whatever `getAll()` returns. Customer carts survive the switch as long as product IDs stay the same.
-- **Categories** can move to the API the same way; replace `MJT.categories` with data loaded before pages render, or have the products endpoint return both.
-- Pages already show a loading message and a friendly error if products fail to load.
-- A suggested layout for that phase: `api/products.php` (public, read-only JSON), `admin/` (dashboard behind login), and `config/` for database credentials kept outside the web root.
+PUT and DELETE can also be sent as POST with `X-HTTP-Method-Override`, for hosts that block those methods.
+
+Run locally with PHP and MySQL/MariaDB:
+
+```bash
+cp server/config.sample.php server/config.php   # fill in your local database
+php server/cli-install.php
+php -S localhost:8000 server/dev-router.php
+# site: http://localhost:8000   dashboard: http://localhost:8000/admin/  (Admin / Admin, then change it)
+```
 
 ## Placeholders to replace before launch
 

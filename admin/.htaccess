@@ -1,0 +1,8 @@
+# The dashboard entry point is index.php (index.html is only the GitHub Pages notice).
+DirectoryIndex index.php
+Options -Indexes
+<Files "index.html">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+</Files>

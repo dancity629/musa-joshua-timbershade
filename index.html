@@ -54,34 +54,35 @@
   </header>
 
   <main id="main">
-    <section class="hero">
+    <section class="hero" data-section="hero">
       <div class="container hero-inner">
         <div class="hero-copy">
-          <p class="eyebrow">Timber &amp; building materials</p>
-          <h1>Quality Timber and Building Materials You Can Trust.</h1>
-          <p class="hero-lead">Find roofing woods, planks, timber and nails for your next project.</p>
+          <p class="eyebrow" data-cms="home.hero.eyebrow">Timber &amp; building materials</p>
+          <h1 data-cms="home.hero.heading">Quality Timber and Building Materials You Can Trust.</h1>
+          <p class="hero-lead" data-cms="home.hero.text">Find roofing woods, planks, timber and nails for your next project.</p>
           <div class="hero-actions">
-            <a class="btn btn--accent btn--lg" href="products.html">Browse Products</a>
-            <a class="btn btn--whatsapp btn--lg" href="https://wa.me/2348024694963" data-action="whatsapp-checkout"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg> Order on WhatsApp</a>
+            <a class="btn btn--accent btn--lg" href="products.html" data-cms-link="home.hero.button">Browse Products</a>
+            <a class="btn btn--whatsapp btn--lg" href="https://wa.me/2348024694963" data-action="whatsapp-checkout" data-cms-wa-button><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg> <span data-cms="home.hero.whatsapp_button_text">Order on WhatsApp</span></a>
           </div>
-          <ul class="hero-points">
+          <ul class="hero-points" data-cms-list="home.hero.points">
             <li>Browse sizes online</li>
             <li>Build your list online</li>
             <li>Send your order on WhatsApp</li>
           </ul>
         </div>
         <div class="hero-media">
-          <img src="assets/images/hero-timber.svg" alt="Illustration of stacked timber in front of a roof truss" width="800" height="600">
+          <img src="assets/images/hero-timber.svg" alt="Illustration of stacked timber in front of a roof truss" width="800" height="600" data-cms-img="home.hero">
         </div>
       </div>
       <div class="measure" aria-hidden="true"></div>
     </section>
 
-    <section class="section" aria-labelledby="categories-heading">
+    <section class="section" aria-labelledby="categories-heading" data-section="categories">
       <div class="container">
         <div class="section-head">
-          <p class="eyebrow">Shop by category</p>
-          <h2 id="categories-heading">What we supply</h2>
+          <p class="eyebrow" data-cms="home.categories.eyebrow">Shop by category</p>
+          <h2 id="categories-heading" data-cms="home.categories.heading">What we supply</h2>
+          <p class="section-lead" data-cms="home.categories.text" hidden></p>
         </div>
         <ul class="category-grid" id="category-grid">
           <li><a class="category-card" href="products.html?category=roofing-woods"><span class="category-card__body"><span class="category-card__name">Roofing Woods</span></span></a></li>
@@ -92,29 +93,29 @@
       </div>
     </section>
 
-    <section class="section section--cream" aria-labelledby="featured-heading">
+    <section class="section section--cream" aria-labelledby="featured-heading" data-section="featured">
       <div class="container">
         <div class="section-head section-head--split">
           <div>
-            <p class="eyebrow">Popular materials</p>
-            <h2 id="featured-heading">Featured products</h2>
+            <p class="eyebrow" data-cms="home.featured.eyebrow">Popular materials</p>
+            <h2 id="featured-heading" data-cms="home.featured.heading">Featured products</h2>
           </div>
-          <a class="btn btn--outline" href="products.html">View all products</a>
+          <a class="btn btn--outline" href="products.html" data-cms="home.featured.button_text">View all products</a>
         </div>
-        <p class="demo-note" role="note"><strong>Prices:</strong> we do not list prices online. Add what you need to your cart and send it on WhatsApp, and we will reply with current prices and availability.</p>
+        <p class="demo-note" role="note" data-price-note><strong>Prices:</strong> we do not list prices online. Add what you need to your cart and send it on WhatsApp, and we will reply with current prices and availability.</p>
         <div class="product-grid" id="featured-products" aria-live="polite">
           <p class="notice">Loading products&hellip;</p>
         </div>
       </div>
     </section>
 
-    <section class="section" aria-labelledby="why-heading">
+    <section class="section" aria-labelledby="why-heading" data-section="why">
       <div class="container">
         <div class="section-head">
-          <p class="eyebrow">Why choose us</p>
-          <h2 id="why-heading">Straightforward supply for your build</h2>
+          <p class="eyebrow" data-cms="home.why.eyebrow">Why choose us</p>
+          <h2 id="why-heading" data-cms="home.why.heading">Straightforward supply for your build</h2>
         </div>
-        <ul class="feature-grid">
+        <ul class="feature-grid" id="why-cards">
           <li class="feature">
             <svg class="feature__icon" viewBox="0 0 48 48" aria-hidden="true"><rect x="6" y="14" width="36" height="8" rx="2"/><rect x="6" y="26" width="36" height="8" rx="2"/><path d="M12 18h10M18 30h14"/></svg>
             <h3>Quality materials</h3>
@@ -139,37 +140,40 @@
       </div>
     </section>
 
-    <section class="section section--cream" aria-labelledby="reviews-heading">
+    <section class="section section--cream" aria-labelledby="reviews-heading" data-section="reviews">
       <div class="container">
         <div class="section-head">
-          <p class="eyebrow">Reviews</p>
-          <h2 id="reviews-heading">What our customers say</h2>
+          <p class="eyebrow" data-cms="home.reviews.eyebrow">Reviews</p>
+          <h2 id="reviews-heading" data-cms="home.reviews.heading">What our customers say</h2>
+          <p class="section-lead" data-cms="home.reviews.text" hidden></p>
         </div>
         <ul class="review-grid" id="reviews-list"></ul>
       </div>
     </section>
 
-    <section class="section section--green about-teaser" aria-labelledby="about-heading">
+    <section class="section section--green about-teaser" aria-labelledby="about-heading" data-section="about">
       <div class="container split">
         <div class="split__media">
-          <img src="assets/images/timber-2x6.svg" alt="Illustration of stacked hardwood timber" width="400" height="300" loading="lazy">
+          <img src="assets/images/timber-2x6.svg" alt="Illustration of stacked hardwood timber" width="400" height="300" loading="lazy" data-cms-img="home.about">
         </div>
         <div class="split__copy">
-          <p class="eyebrow eyebrow--light">About us</p>
-          <h2 id="about-heading">Building materials from people who know timber</h2>
+          <p class="eyebrow eyebrow--light" data-cms="home.about.eyebrow">About us</p>
+          <h2 id="about-heading" data-cms="home.about.heading">Building materials from people who know timber</h2>
+          <div data-cms-paragraphs="home.about.paragraphs">
           <p>Musa Joshua Timbershade supplies roofing woods, planks, timber and nails to builders, contractors, carpenters and homeowners.</p>
           <p>Whether you are roofing a house, casting a slab or finishing a carpentry job, tell us what you need and we will help you get the right materials.</p>
-          <a class="btn btn--accent" href="about.html">More about us</a>
+          </div>
+          <a class="btn btn--accent" href="about.html" data-cms-link="home.about.button">More about us</a>
         </div>
       </div>
     </section>
 
-    <section class="section" aria-labelledby="contact-heading">
+    <section class="section" aria-labelledby="contact-heading" data-section="contact">
       <div class="container contact-band">
         <div>
-          <p class="eyebrow">Contact</p>
-          <h2 id="contact-heading">Talk to us on WhatsApp</h2>
-          <p>Ask about availability, sizes or bulk quantities. Chat with us on <a href="https://wa.me/2348024694963" data-wa-link="enquiry"><span data-wa-display>+234 802 469 4963</span></a>.</p>
+          <p class="eyebrow" data-cms="home.contact.eyebrow">Contact</p>
+          <h2 id="contact-heading" data-cms="home.contact.heading">Talk to us on WhatsApp</h2>
+          <p><span data-cms="home.contact.text">Ask about availability, sizes or bulk quantities.</span> Chat with us on <a href="https://wa.me/2348024694963" data-wa-link="enquiry"><span data-wa-display>+234 802 469 4963</span></a>.</p>
           <p class="muted" data-location>Before Blascu Hotel, Area 1 - Luvu Road, Masaka, Karu LGA, Nasarawa State</p>
         </div>
         <div class="contact-band__actions">
@@ -195,7 +199,7 @@
             <span class="brand__sub">Timbershade</span>
           </span>
         </a>
-        <p>Roofing woods, planks, timber and nails.</p>
+        <p data-cms="settings.footerTagline">Roofing woods, planks, timber and nails.</p>
       </div>
       <nav class="footer-nav" aria-label="Footer">
         <h2 class="footer-heading">Explore</h2>
@@ -215,13 +219,15 @@
       </div>
     </div>
     <div class="container footer-bottom">
-      <p>&copy; <span data-year>2026</span> Musa Joshua Timbershade. Prices and availability are confirmed on WhatsApp.</p>
+      <p>&copy; <span data-year>2026</span> <span data-cms="settings.copyrightText">Musa Joshua Timbershade</span>. <span data-cms="settings.footerText">Prices and availability are confirmed on WhatsApp.</span></p>
     </div>
   </footer>
 
   <script src="assets/js/config.js" defer></script>
   <script src="assets/js/products-data.js" defer></script>
+  <script src="assets/js/site-data.js" defer></script>
   <script src="assets/js/main.js" defer></script>
+  <script src="assets/js/cms.js" defer></script>
   <script src="assets/js/cart.js" defer></script>
   <script src="assets/js/checkout.js" defer></script>
   <script src="assets/js/products.js" defer></script>

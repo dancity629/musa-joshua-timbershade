@@ -25,9 +25,12 @@ window.MJT = window.MJT || {};
   /* ---------- Home page ---------- */
 
   function initFeatured(container, products) {
-    var featured = products.filter(function (p) { return p.featured; });
+    var featured = products.filter(function (p) { return p.featured; })
+      .sort(function (a, b) { return (a.featuredOrder || 0) - (b.featuredOrder || 0); });
     if (!featured.length) featured = products.slice(0, 4);
-    renderGrid(container, featured.slice(0, 6));
+    var cfg = MJT.site && MJT.site.data && MJT.site.data.home && MJT.site.data.home.featured;
+    var limit = cfg && cfg.limit ? cfg.limit : 6;
+    renderGrid(container, featured.slice(0, limit));
   }
 
   function initCategoryGrid(container, products) {
@@ -40,7 +43,7 @@ window.MJT = window.MJT || {};
           el('span', { className: 'category-card__body' }, [
             el('span', { className: 'category-card__name', text: cat.name }),
             el('span', { className: 'category-card__desc', text: cat.description }),
-            el('span', { className: 'category-card__count', text: count + (count === 1 ? ' product' : ' products') + ' →' })
+            el('span', { className: 'category-card__count', text: (count ? count + (count === 1 ? ' product' : ' products') : 'Ask us') + ' →' })
           ])
         ])
       ]));
