@@ -28,13 +28,22 @@ window.MJT = window.MJT || {};
     out.push('Order Reference: ' + orderRef);
     out.push('');
 
+    var pricesOn = utils.showPrices();
     lines.forEach(function (line, index) {
       var p = line.product;
-      out.push((index + 1) + '. ' + p.name + ' \u2014 ' + line.qty + (p.unit ? ' ' + utils.formatUnit(p.unit, line.qty) : ''));
+      var text = (index + 1) + '. ' + p.name + ' \u2014 ' + line.qty + (p.unit ? ' ' + utils.formatUnit(p.unit, line.qty) : '');
+      if (pricesOn && utils.hasPrice(p)) text += ' @ ' + utils.formatMoney(p.price) + ' = ' + utils.formatMoney(p.price * line.qty);
+      out.push(text);
     });
 
     out.push('');
-    out.push('Please send me the prices and confirm availability. Thank you.');
+    if (pricesOn) {
+      var t = MJT.cart.totals(lines);
+      if (t.priced) out.push('Estimated total' + (t.unpriced ? ' (priced items)' : '') + ': ' + utils.formatMoney(t.total));
+      out.push('Please confirm the prices and availability. Thank you.');
+    } else {
+      out.push('Please send me the prices and confirm availability. Thank you.');
+    }
     return out.join('\n');
   }
 
@@ -43,7 +52,7 @@ window.MJT = window.MJT || {};
     if (!state.lines.length) return null;
     var ref = MJT.cart.orderRef();
     var message = buildOrderMessage(state.lines, ref);
-    return { ref: ref, message: message, url: utils.whatsappUrl(message), skipped: state.missing.length };
+    return { ref: ref, message: message, url: utils.whatsappUrl(message), skipped: state.missing.length + state.unavailable.length };
   }
 
   /* ---------- Dialog ---------- */
@@ -107,7 +116,7 @@ window.MJT = window.MJT || {};
         onclick: function () {
           MJT.cart.clear();
           openDialog('Thank you', [
-            el('p', { text: 'Your cart has been cleared. Musa Joshua Timbershade will reply on WhatsApp with prices, availability and delivery for order ' + checkout.ref + '.' })
+            el('p', { text: 'Your cart has been cleared. ' + config.businessName + ' will reply on WhatsApp with prices, availability and delivery for order ' + checkout.ref + '.' })
           ], [
             el('a', { className: 'btn btn--primary', href: 'products.html', text: 'Continue Browsing' }),
             el('button', { type: 'button', className: 'btn btn--outline', text: 'Close', onclick: closeDialog })

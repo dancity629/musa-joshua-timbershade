@@ -24,6 +24,38 @@ window.MJT = window.MJT || {};
     return unit ? 'per ' + unit : '';
   }
 
+  /* ---------- Prices (only when the business chooses to show them) ---------- */
+
+  function showPrices() {
+    return config.priceMode === 'show';
+  }
+
+  // Naira amount, e.g. 12500 -> "₦12,500", 99.5 -> "₦99.50"
+  function formatMoney(amount) {
+    var n = Number(amount);
+    if (!isFinite(n)) return '';
+    var fixed = n % 1 ? n.toFixed(2) : String(Math.round(n));
+    var parts = fixed.split('.');
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return '\u20A6' + parts.join('.');
+  }
+
+  function hasPrice(product) {
+    return showPrices() && product && typeof product.price === 'number';
+  }
+
+  function isAvailable(product) {
+    if (!product || product.available === false) return false;
+    return !(typeof product.stock === 'number' && product.stock <= 0);
+  }
+
+  // Show the size line only when the name does not already say it.
+  function sizeLabel(product) {
+    if (!product.size) return '';
+    var squash = function (t) { return String(t).toLowerCase().replace(/[^a-z0-9]/g, ''); };
+    return squash(product.name).indexOf(squash(product.size)) === -1 ? product.size : '';
+  }
+
   /* ---------- Safe rendering ---------- */
 
   function escapeHtml(value) {
@@ -144,14 +176,52 @@ window.MJT = window.MJT || {};
     return match ? match.name : 'Building Materials';
   }
 
+  /* ---------- Product details dialog (gallery, size, price) ---------- */
+
+  var detailsDialog = null;
+
+  function openProductDetails(product) {
+    if (!detailsDialog) {
+      detailsDialog = el('dialog', { className: 'modal modal--product', 'aria-labelledby': 'product-dialog-title' });
+      detailsDialog.addEventListener('click', function (e) { if (e.target === detailsDialog) detailsDialog.close(); });
+      document.body.appendChild(detailsDialog);
+    }
+    var d = detailsDialog;
+    d.textContent = '';
+    var images = [product.image].concat(product.gallery || []).filter(Boolean);
+    var main = el('img', { className: 'product-detail__img', src: safeImageUrl(images[0]), alt: product.name, width: '800', height: '600' });
+    var thumbs = images.length > 1 ? el('div', { className: 'product-detail__thumbs' }, images.map(function (src, i) {
+      return el('button', {
+        type: 'button', className: 'product-detail__thumb', 'aria-label': 'Show image ' + (i + 1) + ' of ' + images.length,
+        onclick: function () { main.src = safeImageUrl(src); }
+      }, [el('img', { src: safeImageUrl(src), alt: '', width: '96', height: '72' })]);
+    })) : null;
+    var size = product.size ? el('p', { className: 'product-card__unit', text: 'Size: ' + product.size }) : null;
+    var price = hasPrice(product)
+      ? el('p', { className: 'product-card__price', text: formatMoney(product.price) + ' ' + perUnitLabel(product.unit) })
+      : el('p', { className: 'product-card__unit', text: 'Sold ' + perUnitLabel(product.unit) + ' \u00B7 price on request' });
+    d.appendChild(el('div', { className: 'modal__content' }, [
+      el('button', { type: 'button', className: 'modal__close', 'aria-label': 'Close', onclick: function () { d.close(); } }, ['\u00D7']),
+      main, thumbs,
+      el('p', { className: 'product-card__category', text: categoryName(product.category) }),
+      el('h2', { id: 'product-dialog-title', className: 'modal__title', text: product.name }),
+      el('p', { text: product.description || '' }),
+      size, price,
+      isAvailable(product) ? null : el('p', { className: 'product-card__status', text: 'Currently unavailable' })
+    ]));
+    if (typeof d.showModal === 'function') { if (!d.open) d.showModal(); } else d.setAttribute('open', '');
+  }
+
   function renderProductCard(product) {
     var qtyId = 'qty-' + product.id;
+    var available = isAvailable(product);
     var qtyInput = el('input', {
       id: qtyId, className: 'qty-input', type: 'number', inputmode: 'numeric',
-      min: String(config.minQuantity), max: String(config.maxQuantity), step: '1', value: '1'
+      min: String(config.minQuantity), max: String(typeof product.stock === 'number' && product.stock > 0 ? Math.min(product.stock, config.maxQuantity) : config.maxQuantity),
+      step: '1', value: '1', disabled: !available
     });
 
-    var addButton = el('button', { type: 'button', className: 'btn btn--primary btn--block', text: 'Add to Cart' });
+    var addButton = el('button', { type: 'button', className: 'btn btn--primary btn--block', text: available ? 'Add to Cart' : 'Unavailable', disabled: !available });
     addButton.addEventListener('click', function () {
       var qty = MJT.cart.normalizeQuantity(qtyInput.value);
       if (qty === null) {
@@ -165,15 +235,24 @@ window.MJT = window.MJT || {};
       showToast('Added ' + qty + ' ' + formatUnit(product.unit, qty) + ' of ' + product.name + ' to your cart.', { href: 'cart.html', label: 'View cart' });
     });
 
-    return el('article', { className: 'product-card', 'data-product-id': product.id }, [
+    var size = sizeLabel(product);
+    var priceLine = hasPrice(product)
+      ? el('p', { className: 'product-card__price' }, [formatMoney(product.price), el('span', { text: ' ' + perUnitLabel(product.unit) })])
+      : (product.unit ? el('p', { className: 'product-card__unit', text: 'Sold ' + perUnitLabel(product.unit) }) : null);
+
+    return el('article', { className: 'product-card' + (available ? '' : ' product-card--unavailable'), 'data-product-id': product.id }, [
       el('div', { className: 'product-card__media' }, [
-        el('img', { src: safeImageUrl(product.image), alt: product.name, loading: 'lazy', width: '400', height: '300' })
+        el('img', { src: safeImageUrl(product.image), alt: product.name, loading: 'lazy', width: '400', height: '300' }),
+        available ? null : el('span', { className: 'product-card__badge', text: 'Currently unavailable' })
       ]),
       el('div', { className: 'product-card__body' }, [
         el('p', { className: 'product-card__category', text: categoryName(product.category) }),
-        el('h3', { className: 'product-card__title', text: product.name }),
+        el('h3', { className: 'product-card__title' }, [
+          el('button', { type: 'button', className: 'product-card__link', text: product.name, onclick: function () { openProductDetails(product); } })
+        ]),
         el('p', { className: 'product-card__desc', text: product.description || '' }),
-        product.unit ? el('p', { className: 'product-card__unit', text: 'Sold ' + perUnitLabel(product.unit) }) : null,
+        size ? el('p', { className: 'product-card__size', text: 'Size: ' + size }) : null,
+        priceLine,
         el('div', { className: 'product-card__actions' }, [
           el('label', { className: 'visually-hidden', for: qtyId, text: 'Quantity of ' + product.name }),
           qtyInput,
@@ -268,16 +347,22 @@ window.MJT = window.MJT || {};
     storage: storage,
     showToast: showToast,
     whatsappUrl: whatsappUrl,
+    formatMoney: formatMoney,
+    hasPrice: hasPrice,
+    showPrices: showPrices,
+    isAvailable: isAvailable,
     generalEnquiryMessage: generalEnquiryMessage,
     categoryName: categoryName
   };
   MJT.renderProductCard = renderProductCard;
+  MJT.openProductDetails = openProductDetails;
   MJT.updateCartBadge = updateCartBadge;
 
   document.addEventListener('DOMContentLoaded', function () {
     initNav();
-    fillSiteDetails();
     updateCartBadge();
+    // Business details come from the backend; fill them in once loaded.
+    (MJT.site && MJT.site.ready ? MJT.site.ready : Promise.resolve()).then(fillSiteDetails);
   });
 
   // Keep the badge in sync when the cart changes in another tab.

@@ -56,15 +56,15 @@
   <main id="main">
     <section class="page-hero">
       <div class="container">
-        <p class="eyebrow eyebrow--light">About us</p>
-        <h1>About Musa Joshua Timbershade</h1>
-        <p>Timber and building materials for builders, carpenters and homeowners.</p>
+        <p class="eyebrow eyebrow--light" data-cms="pages.about.eyebrow">About us</p>
+        <h1 data-cms="pages.about.title">About Musa Joshua Timbershade</h1>
+        <p data-cms="pages.about.intro">Timber and building materials for builders, carpenters and homeowners.</p>
       </div>
     </section>
 
     <section class="section">
       <div class="container split">
-        <div class="split__copy prose">
+        <div class="split__copy prose" id="about-sections">
           <h2>Who we are</h2>
           <!-- Owner: replace or extend this introduction with the business story, years of operation and location once confirmed. -->
           <p>Musa Joshua Timbershade is a building materials business supplying roofing woods, planks, timber and nails for construction and carpentry work.</p>
@@ -77,7 +77,7 @@
             <li><strong>We confirm.</strong> We reply with prices, availability and delivery or pickup before anything is final.</li>
           </ol>
         </div>
-        <div class="split__media">
+        <div class="split__media" id="about-images">
           <img src="assets/images/plank-1x6.svg" alt="Illustration of a stack of narrow timber planks" width="400" height="300" loading="lazy">
           <img src="assets/images/roofing-wood-2x4.svg" alt="Illustration of a bundle of roofing wood" width="400" height="300" loading="lazy">
         </div>
@@ -87,9 +87,9 @@
     <section class="section section--cream">
       <div class="container">
         <div class="section-head">
-          <h2>What we supply</h2>
+          <h2 data-cms="pages.about.supply_heading">What we supply</h2>
         </div>
-        <ul class="supply-list">
+        <ul class="supply-list" id="supply-list">
           <li><a href="products.html?category=roofing-woods">Roofing Woods</a><span>Rafters and battens</span></li>
           <li><a href="products.html?category=planks">Planks</a><span>Fascia boards and planks</span></li>
           <li><a href="products.html?category=timber">Timber</a><span>2&quot; x 6&quot; timber</span></li>
@@ -101,8 +101,8 @@
     <section class="section">
       <div class="container contact-band">
         <div>
-          <h2>Ready to order?</h2>
-          <p>Browse the catalogue or message us with your list.</p>
+          <h2 data-cms="pages.about.cta_heading">Ready to order?</h2>
+          <p data-cms="pages.about.cta_text">Browse the catalogue or message us with your list.</p>
         </div>
         <div class="contact-band__actions">
           <a class="btn btn--primary btn--lg" href="products.html">Browse Products</a>
@@ -127,7 +127,7 @@
             <span class="brand__sub">Timbershade</span>
           </span>
         </a>
-        <p>Roofing woods, planks, timber and nails.</p>
+        <p data-cms="settings.footerTagline">Roofing woods, planks, timber and nails.</p>
       </div>
       <nav class="footer-nav" aria-label="Footer">
         <h2 class="footer-heading">Explore</h2>
@@ -147,13 +147,15 @@
       </div>
     </div>
     <div class="container footer-bottom">
-      <p>&copy; <span data-year>2026</span> Musa Joshua Timbershade. Prices and availability are confirmed on WhatsApp.</p>
+      <p>&copy; <span data-year>2026</span> <span data-cms="settings.copyrightText">Musa Joshua Timbershade</span>. <span data-cms="settings.footerText">Prices and availability are confirmed on WhatsApp.</span></p>
     </div>
   </footer>
 
   <script src="assets/js/config.js" defer></script>
   <script src="assets/js/products-data.js" defer></script>
+  <script src="assets/js/site-data.js" defer></script>
   <script src="assets/js/main.js" defer></script>
+  <script src="assets/js/cms.js" defer></script>
   <script src="assets/js/cart.js" defer></script>
   <script src="assets/js/checkout.js" defer></script>
 </body>

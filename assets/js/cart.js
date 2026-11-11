@@ -133,18 +133,32 @@ window.MJT = window.MJT || {};
     },
 
     // Join cart items with product data. Items whose product no longer exists
-    // are returned separately in `missing` instead of breaking the page.
+    // are returned separately in `missing`, and products marked unavailable in
+    // `unavailable`, instead of breaking the page. Neither goes into the order.
     resolve: function (products) {
       var byId = {};
       (products || []).forEach(function (p) { byId[p.id] = p; });
       var lines = [];
       var missing = [];
+      var unavailable = [];
       items.forEach(function (item) {
         var product = byId[item.id];
         if (!product) { missing.push(item); return; }
+        if (!utils.isAvailable(product)) { unavailable.push({ product: product, qty: item.qty }); return; }
         lines.push({ product: product, qty: clampToStock(product, item.qty) });
       });
-      return { lines: lines, missing: missing };
+      return { lines: lines, missing: missing, unavailable: unavailable };
+    },
+
+    // Estimated total of lines that have a price (only in "show prices" mode).
+    totals: function (lines) {
+      var total = 0;
+      var unpriced = 0;
+      lines.forEach(function (line) {
+        if (utils.hasPrice(line.product)) total += line.product.price * line.qty;
+        else unpriced += 1;
+      });
+      return { total: Math.round(total * 100) / 100, unpriced: unpriced, priced: lines.length - unpriced };
     }
   };
 
@@ -194,7 +208,10 @@ window.MJT = window.MJT || {};
       el('img', { className: 'cart-item__img', src: utils.safeImageUrl(p.image), alt: p.name, width: '120', height: '90' }),
       el('div', { className: 'cart-item__info' }, [
         el('h3', { className: 'cart-item__name', text: p.name }),
-        p.unit ? el('p', { className: 'cart-item__unit', text: 'Sold ' + utils.perUnitLabel(p.unit) }) : null,
+        utils.hasPrice(p)
+          ? el('p', { className: 'cart-item__unit', text: utils.formatMoney(p.price) + ' ' + utils.perUnitLabel(p.unit) })
+          : (p.unit ? el('p', { className: 'cart-item__unit', text: 'Sold ' + utils.perUnitLabel(p.unit) }) : null),
+        utils.hasPrice(p) ? el('p', { className: 'cart-item__price', text: 'Line total: ' + utils.formatMoney(p.price * line.qty) }) : null,
         typeof p.stock === 'number' ? el('p', { className: 'cart-item__note', text: 'Limited to ' + p.stock + ' in stock.' }) : null
       ]),
       quantityControl(line),
@@ -210,14 +227,17 @@ window.MJT = window.MJT || {};
   }
 
   function missingRow(item) {
+    var known = item.product;
     return el('li', { className: 'cart-item cart-item--missing' }, [
       el('div', { className: 'cart-item__info' }, [
-        el('h3', { className: 'cart-item__name', text: 'Item no longer available' }),
-        el('p', { className: 'cart-item__unit', text: 'This product has been removed from the catalogue and will not be included in your order.' })
+        el('h3', { className: 'cart-item__name', text: known ? known.name + ': currently unavailable' : 'Item no longer available' }),
+        el('p', { className: 'cart-item__unit', text: known
+          ? 'This product is currently unavailable and will not be included in your order. Ask us on WhatsApp when it will be back.'
+          : 'This product has been removed from the catalogue and will not be included in your order.' })
       ]),
       el('button', {
         type: 'button', className: 'btn btn--text cart-item__remove', text: 'Remove',
-        onclick: function () { MJT.cart.remove(item.id); }
+        onclick: function () { MJT.cart.remove(known ? known.id : item.id); }
       })
     ]);
   }
@@ -235,7 +255,7 @@ window.MJT = window.MJT || {};
     var state = MJT.cart.resolve(products);
     root.textContent = '';
 
-    if (!state.lines.length && !state.missing.length) {
+    if (!state.lines.length && !state.missing.length && !state.unavailable.length) {
       root.appendChild(el('div', { className: 'empty-state' }, [
         el('img', { src: 'assets/images/plank-1x10.svg', alt: '', width: '240', height: '180' }),
         el('h2', { text: 'Your cart is empty' }),
@@ -247,17 +267,25 @@ window.MJT = window.MJT || {};
 
     var list = el('ul', { className: 'cart-list', 'aria-label': 'Items in your cart' });
     state.lines.forEach(function (line) { list.appendChild(cartRow(line)); });
+    state.unavailable.forEach(function (item) { list.appendChild(missingRow(item)); });
     state.missing.forEach(function (item) { list.appendChild(missingRow(item)); });
 
     var count = state.lines.length;
-    var summary = el('dl', { className: 'summary-list' }, [
-      summaryRow('Products in your order', String(count))
-    ]);
+    var rows = [summaryRow('Products in your order', String(count))];
+    var pricesOn = utils.showPrices();
+    if (pricesOn && count) {
+      var t = MJT.cart.totals(state.lines);
+      if (t.priced) rows.push(summaryRow(t.unpriced ? 'Estimated total (priced items)' : 'Estimated total', utils.formatMoney(t.total), 'summary-row--total'));
+      if (t.unpriced) rows.push(summaryRow('Price on request', t.unpriced + (t.unpriced === 1 ? ' item' : ' items')));
+    }
+    var summary = el('dl', { className: 'summary-list' }, rows);
 
     var aside = el('aside', { className: 'cart-summary', 'aria-labelledby': 'summary-heading' }, [
       el('h2', { id: 'summary-heading', text: 'Order summary' }),
       summary,
-      el('p', { className: 'cart-summary__note', text: 'Prices are not listed online. Send your list on WhatsApp and we will reply with current prices, availability and delivery. Sending it is an enquiry, not a payment.' }),
+      el('p', { className: 'cart-summary__note', text: pricesOn
+        ? 'Prices shown are a guide. Send your list on WhatsApp and we will confirm final prices, availability and delivery. Sending it is an enquiry, not a payment.'
+        : 'Prices are not listed online. Send your list on WhatsApp and we will reply with current prices, availability and delivery. Sending it is an enquiry, not a payment.' }),
       el('button', { type: 'button', className: 'btn btn--whatsapp btn--block', 'data-action': 'whatsapp-checkout', disabled: !state.lines.length, text: 'Proceed to WhatsApp Checkout' }),
       el('a', { className: 'btn btn--outline btn--block', href: 'products.html', text: 'Continue Shopping' }),
       el('button', {

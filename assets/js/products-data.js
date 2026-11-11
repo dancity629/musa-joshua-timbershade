@@ -1,5 +1,11 @@
 /*
- * Product catalogue data.
+ * Built-in product catalogue (fallback only).
+ *
+ * With the PHP backend installed, products and categories are managed in the
+ * admin dashboard and loaded from the API by site-data.js, which replaces
+ * MJT.categories and MJT.productsData. This list is only used when the API
+ * cannot be reached (for example on the GitHub Pages copy of the site).
+ *
  *
  * Prices are not shown on the website: customers send their list on WhatsApp
  * and the business replies with current prices. Descriptions are placeholder
@@ -48,19 +54,12 @@ MJT.productsData = Object.freeze([
 /*
  * Product source.
  * Every page gets products through MJT.productSource.getAll(), which returns a
- * Promise. Today it resolves the local list above. To use a PHP/MySQL API later,
- * replace the body with a fetch call, for example:
- *
- *   getAll: function () {
- *     return fetch('api/products.php', { headers: { Accept: 'application/json' } })
- *       .then(function (res) { if (!res.ok) throw new Error('HTTP ' + res.status); return res.json(); });
- *   }
- *
- * Nothing else in the frontend needs to change as long as the API returns the
- * same fields.
+ * Promise. It waits for site-data.js to load the catalogue from the API (or to
+ * fall back to the built-in list above).
  */
 MJT.productSource = {
   getAll: function () {
-    return Promise.resolve(MJT.productsData.slice());
+    var ready = MJT.site && MJT.site.ready ? MJT.site.ready : Promise.resolve();
+    return ready.then(function () { return MJT.productsData.slice(); });
   }
 };
