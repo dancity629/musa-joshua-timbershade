@@ -155,3 +155,12 @@ CREATE TABLE IF NOT EXISTS activity_log (
   KEY idx_activity_time (created_at),
   CONSTRAINT fk_activity_admin FOREIGN KEY (admin_id) REFERENCES admins (id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS admin_sessions (
+  -- SHA-256 of the session ID (the raw ID only lives in the admin's cookie)
+  id CHAR(64) NOT NULL,
+  data MEDIUMTEXT NOT NULL,
+  updated_at INT UNSIGNED NOT NULL,
+  PRIMARY KEY (id),
+  KEY idx_sessions_updated (updated_at)
+) ENGINE=InnoDB DEFAULT CHARSET=ascii COLLATE=ascii_bin;

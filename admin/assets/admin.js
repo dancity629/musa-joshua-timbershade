@@ -151,6 +151,7 @@
     return api('GET', 'auth/me').then(function (me) {
       state.csrf = me.csrf;
       state.admin = me.admin;
+      if (me.upload_max_bytes > 0) MAX_UPLOAD = me.upload_max_bytes;
       return me;
     });
   }

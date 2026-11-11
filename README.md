@@ -151,7 +151,7 @@ To replace them:
 
 ## Deployment
 
-**For the admin dashboard, follow [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)** (PHP/MySQL hosting, database, installer, first login). The steps below cover static-only hosting of the public pages.
+**For the admin dashboard, follow [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)** (PHP/MySQL hosting such as cPanel) **or [docs/VERCEL.md](docs/VERCEL.md)** (Vercel with an external MySQL database and Vercel Blob). The steps below cover static-only hosting of the public pages.
 
 The site is plain HTML, CSS and JavaScript. It runs on any PHP/MySQL shared host (cPanel, DirectAdmin, Plesk etc.) without changes, and also on static hosts.
 
@@ -187,6 +187,8 @@ assets/js/site-data.js  Loads all public content from api/index.php?route=public
 assets/js/cms.js        Fills elements marked data-cms="..." with that content
 tests/            api-test.php (79 checks), e2e.js (33 browser checks), static-fallback.js
 docs/DEPLOYMENT.md      Hosting, install, security summary
+docs/VERCEL.md          Deploying on Vercel (env variables, database, Blob)
+vercel.json             Vercel routes and PHP runtime
 ```
 
 Main API routes (all JSON; admin routes need the session, and changes need the `X-CSRF-Token` header):

@@ -21,6 +21,9 @@ final class Auth
         ini_set('session.sid_length', '48');
         ini_set('session.sid_bits_per_character', '6');
         ini_set('session.gc_maxlifetime', (string) max(1800, (int) Config::get('session_absolute_seconds', 28800)));
+        session_set_save_handler(new DbSessionHandler(), true);
+        ini_set('session.gc_probability', '1');
+        ini_set('session.gc_divisor', '50');
         session_name(self::SESSION_NAME);
         session_set_cookie_params([
             'lifetime' => 0,

@@ -30,6 +30,7 @@ final class Media
     public static function url(?string $path): ?string
     {
         if ($path === null || $path === '') return null;
+        if (str_starts_with($path, 'https://')) return $path; // stored on Vercel Blob
         return self::basePath() . '/' . ltrim($path, '/');
     }
 
@@ -97,14 +98,17 @@ final class Media
         }
 
         $sub = 'uploads/' . date('Y') . '/' . date('m');
+        $original = Input::cleanText(basename((string) ($file['name'] ?? 'image')), 200);
+        if (Storage::usesBlob()) {
+            $name = bin2hex(random_bytes(12)) . '.' . self::ALLOWED[$mime];
+            return [Storage::put($sub . '/' . $name, $file['tmp_name'], $mime), $mime, $size, $w, $h, $original];
+        }
         $dir = MJT_ROOT . '/' . $sub;
         if (!is_dir($dir) && !mkdir($dir, 0755, true) && !is_dir($dir)) throw new RuntimeException('Cannot create upload folder ' . $sub);
         $name = bin2hex(random_bytes(12)) . '.' . self::ALLOWED[$mime];
         $target = $dir . '/' . $name;
         if (!move_uploaded_file($file['tmp_name'], $target)) throw new RuntimeException('Cannot save uploaded file.');
         @chmod($target, 0644);
-
-        $original = Input::cleanText(basename((string) ($file['name'] ?? 'image')), 200);
         return [$sub . '/' . $name, $mime, $size, $w, $h, $original];
     }
 
@@ -118,6 +122,7 @@ final class Media
     /** Delete a stored file, but only one we uploaded (never the built-in assets). */
     public static function deleteFile(string $path): void
     {
+        if (Storage::isBlobUrl($path)) { Storage::delete($path); return; }
         if (!preg_match('#^uploads/\d{4}/\d{2}/[a-f0-9]{24}\.(jpg|png|webp)$#', $path)) return;
         $full = MJT_ROOT . '/' . $path;
         if (is_file($full)) @unlink($full);

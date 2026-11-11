@@ -111,6 +111,7 @@ final class Api
             'admin' => $admin ? ['username' => $admin['username'], 'must_change_password' => $admin['must_change_password'], 'last_login_at' => $admin['last_login_at']] : null,
             'csrf' => Auth::csrfToken(),
             'session_idle_seconds' => (int) Config::get('session_idle_seconds', 1800),
+            'upload_max_bytes' => (int) Config::get('upload_max_bytes', 5 * 1024 * 1024),
         ]);
     }
 

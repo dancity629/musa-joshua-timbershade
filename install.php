@@ -34,6 +34,14 @@ if (!($config['allow_web_install'] ?? false)) {
     exit;
 }
 
+// When an install token is configured (always on Vercel), the URL must carry it: install.php?token=...
+$installToken = (string) ($config['install_token'] ?? '');
+if ($installToken !== '' && !hash_equals($installToken, (string) ($_GET['token'] ?? ''))) {
+    http_response_code(404);
+    page('Not available', '<p>Open this page with the install token from your hosting settings: <code>install.php?token=...</code></p>');
+    exit;
+}
+
 try {
     Db::pdo();
 } catch (Throwable $e) {

@@ -43,8 +43,11 @@ final class Http
 
     public static function clientIp(): string
     {
-        // REMOTE_ADDR only: forwarded headers are client-controlled and would let attackers dodge rate limits.
-        $ip = (string) ($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0');
+        // REMOTE_ADDR by default: forwarded headers are client-controlled and would let attackers dodge rate limits.
+        // Behind a proxy that overwrites a header itself (Vercel sets X-Real-IP), that header can be configured.
+        $header = (string) Config::get('client_ip_header', '');
+        $ip = $header !== '' && !empty($_SERVER[$header]) ? (string) $_SERVER[$header] : (string) ($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0');
+        $ip = trim(explode(',', $ip)[0]);
         return substr($ip, 0, 45);
     }
 

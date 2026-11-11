@@ -38,4 +38,17 @@ return [
 
     // Allow the browser installer (install.php) to run. It refuses to run once an admin exists.
     'allow_web_install' => true,
+    // Secret the installer asks for (install.php?token=...), so nobody else can install first
+    // and log in with the initial password. Use a long random value; empty = no token.
+    'install_token' => '',
+
+    // Encrypted database connection (needed by most cloud MySQL providers). Add to 'db' above:
+    //   'ssl' => true, 'ssl_ca' => '/path/to/ca.pem' (optional; the system CA bundle is used by default)
+
+    // Store uploaded images in Vercel Blob instead of uploads/ (set on serverless hosting).
+    'blob_token' => '',
+
+    // Only behind a proxy that sets this header itself (never trust a header clients can send),
+    // e.g. 'HTTP_X_REAL_IP' on Vercel. Empty uses REMOTE_ADDR.
+    'client_ip_header' => '',
 ];
