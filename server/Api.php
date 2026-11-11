@@ -278,7 +278,7 @@ final class Products
             'stock' => $in->intOrNull('stock', 0, 10000000, 'Stock quantity'),
             'is_available' => $in->bool('is_available', true),
             'is_featured' => $in->bool('is_featured', false),
-            'sort_order' => $in->int('sort_order', -100000, 100000, 0, 'Display order'),
+            'sort_order' => $in->intOrNull('sort_order', -100000, 100000, 'Display order'),
         ];
         if ($v['category_id'] === null) $in->fail('category_id', 'Please choose a category.');
         elseif (!Db::value('SELECT 1 FROM categories WHERE id = ?', [$v['category_id']])) $in->fail('category_id', 'This category no longer exists.');
@@ -312,7 +312,7 @@ final class Products
         $v = self::validate(Http::jsonBody(), null);
         $id = Db::tx(function () use ($v) {
             $featuredOrder = $v['is_featured'] ? (int) Db::value('SELECT COALESCE(MAX(featured_order), 0) + 1 FROM products') : 0;
-            $sort = $v['sort_order'] ?: (int) Db::value('SELECT COALESCE(MAX(sort_order), 0) + 10 FROM products');
+            $sort = $v['sort_order'] ?? (int) Db::value('SELECT COALESCE(MAX(sort_order), 0) + 10 FROM products');
             $id = Db::insert(
                 'INSERT INTO products (code, name, category_id, description, image_id, price, unit, size_spec, stock, is_available, is_featured, featured_order, sort_order)
                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
@@ -341,7 +341,7 @@ final class Products
                 'UPDATE products SET code = ?, name = ?, category_id = ?, description = ?, image_id = ?, price = ?, unit = ?, size_spec = ?,
                  stock = ?, is_available = ?, is_featured = ?, featured_order = ?, sort_order = ? WHERE id = ?',
                 [$v['code'], $v['name'], $v['category_id'], $v['description'], $v['image_id'], $v['price'], $v['unit'], $v['size_spec'],
-                 $v['stock'], (int) $v['is_available'], (int) $v['is_featured'], $featuredOrder, $v['sort_order'], $id]
+                 $v['stock'], (int) $v['is_available'], (int) $v['is_featured'], $featuredOrder, $v['sort_order'] ?? (int) $current['sort_order'], $id]
             );
             self::saveGallery($id, $v['gallery_ids']);
         });
