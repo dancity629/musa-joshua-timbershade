@@ -13,7 +13,7 @@ if (preg_match('#^/server(/|$)#', $path) || preg_match('#^/uploads/.*\.(php\d?|p
     return true;
 }
 if (preg_match('#^/api(/.*)?$#', $path, $m)) {
-    $_GET['route'] = ltrim($m[1] ?? '', '/');
+    if (($m[1] ?? '') !== '/index.php') $_GET['route'] = ltrim($m[1] ?? '', '/');
     $_SERVER['SCRIPT_NAME'] = '/api/index.php';
     require $root . '/api/index.php';
     return true;

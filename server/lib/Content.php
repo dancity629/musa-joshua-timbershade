@@ -248,9 +248,15 @@ final class Content
         $walk = function ($node) use (&$walk, &$ids) {
             if (!is_array($node)) return;
             foreach ($node as $k => $v) {
-                if ($k === 'image_id' && is_int($v)) $ids[] = $v;
-                elseif ($k === 'image_ids' && is_array($v)) foreach ($v as $x) if (is_int($x)) $ids[] = $x;
-                elseif (is_array($v)) $walk($v);
+                if ($k === 'image_id') {
+                    if (is_int($v)) $ids[] = $v;
+                } elseif ($k === 'image_ids' && is_array($v)) {
+                    foreach ($v as $x) {
+                        if (is_int($x)) $ids[] = $x;
+                    }
+                } elseif (is_array($v)) {
+                    $walk($v);
+                }
             }
         };
         $walk($data);
